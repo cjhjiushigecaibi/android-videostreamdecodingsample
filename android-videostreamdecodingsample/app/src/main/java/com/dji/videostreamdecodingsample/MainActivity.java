@@ -1,6 +1,8 @@
 package com.dji.videostreamdecodingsample;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
@@ -25,6 +27,7 @@ import android.widget.Toast;
 import com.dji.videostreamdecodingsample.media.DJIVideoStreamDecoder;
 import com.dji.videostreamdecodingsample.media.NativeHelper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -410,6 +413,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         if (count++ % 30 == 0 && yuvFrame != null) {
             final byte[] bytes = new byte[dataSize];
             yuvFrame.get(bytes);
+
             //DJILog.d(TAG, "onYuvDataReceived2 " + dataSize);
             AsyncTask.execute(new Runnable() {
                 @Override
@@ -537,11 +541,20 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         if (!dir.exists() || !dir.isDirectory()) {
             dir.mkdirs();
         }
+
+        //转换yuv到bitmap-start
         YuvImage yuvImage = new YuvImage(buf,
                 ImageFormat.NV21,
                 width,
                 height,
                 null);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        yuvImage.compressToJpeg(new Rect(0, 0, width, height), 100, stream);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(),
+                0, stream.size());
+    //转换yuv到bitmap-end
+
         OutputStream outputFile;
         final String path = dir + "/ScreenShot_" + System.currentTimeMillis() + ".jpg";
         try {

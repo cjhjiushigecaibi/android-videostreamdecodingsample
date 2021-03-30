@@ -90,7 +90,7 @@ public class DJIVideoStreamDecoder implements NativeHelper.NativeDataListener {
     private DJICodecManager.YuvDataCallback yuvDataListener;
 
     /**
-     * A data structure for containing the frames.
+     * 存储帧的数据结构体
      */
     private static class DJIFrame {
         public byte[] videoBuffer;
@@ -778,9 +778,10 @@ public class DJIVideoStreamDecoder implements NativeHelper.NativeDataListener {
 
             // Get the output data from the decoder.
             int outIndex = codec.dequeueOutputBuffer(bufferInfo, 0);
-
+//从buffer中获取yuv数据
             if (outIndex >= 0) {
                 //Log.d(TAG, "decodeFrame: outIndex: " + outIndex);
+                surface=null;
                 if (surface == null && yuvDataListener != null) {
                     // If the surface is null, the yuv data should be get from the buffer and invoke the callback.
                     logd("decodeFrame: need callback");
